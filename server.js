@@ -1,12 +1,50 @@
-const http = require("http");
-const port = 8081;
-http.createServer((req,res) => {
-    res.writeHead(200,{"Content Type":"text/html"});
-    res.write("<h4>Hello, priyanshu this is my first server</h4>")
-    res.end();
+const express = require("express");
 
-}).listen(port,() =>{
-    console.log(`My Node js server started on port ${port}`);
+const app = express();
 
+app.use(express.json());
+
+const port=8081;
+
+const todoList = ["Need to learn" , "Need to code"];
+
+//http://localhost:8081/todos
+
+app.get("/todos",(req,res) => {
+    res.status(200).send(todoList);
 });
-//http://localhost:8081
+
+app.post("/todos",(req,res) => {
+    let newTodoitem = req.body.item;
+    todoList.push(newTodoitem);
+    res.status(201).send({
+        message:"The to do got added succesfully"
+    });
+});
+
+app.delete("/todos",(req,res) => {
+    let deltodo = req.body.item;
+    todoList.find((element,index)=> {
+        if(element===deltodo)
+        {
+            todoList.splice(index,1);
+        }
+    });
+    res.status(202).send({
+        message:`Deleted item -${deltodo}`,
+    });
+});
+
+app.all("/todos",(req,res) => {
+    res.status(501).send({
+        message:"These methods are not defined"
+    })
+});
+
+app.all("*",(req,res) => {
+    res.status(404),send();
+});
+
+app.listen(port,() => {
+    console.log(`Node js server started on ${port}`);
+})
